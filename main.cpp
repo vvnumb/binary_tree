@@ -33,7 +33,7 @@ public:
         return _root;
     }
 
-    int Add(int data){
+    int AddNode(int data){ // 0- успешно добавлено, 1- не добавлено тк элемент уже есть, 2- добавлен корень
         Node *newNode = new Node(data);
 
         //первый элемент
@@ -73,6 +73,73 @@ public:
             }
         }
     }
+
+    int DeleteNode(int data){ // 2 - удаление корня, 1- удаление не произведено тк элемента нет, 0- успешное удаление
+        Node *Current = _root;
+        if (Current->left == NULL && Current->right == NULL){
+            if (Current->Data == data)
+            {
+                delete _root;
+                return 2;
+            }
+            else
+            {
+                return 1;
+            }
+            bool is_not_found = 1;
+            bool is_end = 0;
+            // идем по бин.дереву пока либо не уперлись в конец дерева
+            // либо пока не нашли нужный элемент
+            // имеем 2 флага для контроля ситуации
+            while (is_not_found && !is_end){
+                if (Current->Data > data){
+                    //more
+                    if(Current->right == NULL){
+                        is_end = 1;
+                    }
+                    else{
+                        Current = Current->right;
+                    }
+
+                }
+                else if(Current->Data < data){
+                    //less
+                    if (Current->left == NULL){
+                        is_end = 1;
+                    }
+                    else{
+                        Current= Current->left;
+                    }
+                }
+                else{
+                    //equal
+                    is_not_found = 0;
+                }
+            }
+            //Если не конец, то Current - адрес удаляемого элемента
+            if (is_end){ // удаление не требуется, если не нашли нашего элемента
+                return 1;
+            }
+            // приорететная левая ветка
+            if (Current->left != NULL){
+                //пошли искать наибольший элемент в левой ветке
+
+            }
+            else if(Current->right != NULL){
+                // ищем наименьший элемент в правой ветке
+
+            }
+            else{
+                //это лист
+            }
+
+
+
+
+        }
+    }
+    //end of tree
+
 };
 
 int main()
