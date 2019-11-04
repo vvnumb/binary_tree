@@ -131,7 +131,7 @@ public:
             }
 
             Node *Deleting = Current; // записали удаляемый элемент
-            Node *Past; // сохраняем предыдущий элемент, чтобы в дальнейшем поменять связи
+            Node *Past = Current; // сохраняем предыдущий элемент, чтобы в дальнейшем поменять связи
 
             // приорететная левая ветка
             if (Current->left != NULL){
@@ -155,15 +155,39 @@ public:
                     Father->left = Current;
                 else
                     Father->right = Current;
-                delete Deleting;
 
+
+                delete Deleting;
             }
             else if(Current->right != NULL){
                 // ищем наименьший элемент в правой ветке
 
+                Current = Current->right;
+                while(Current->right != NULL){
+                    Past = Current;
+                    Current = Current->left;
+                }
+                //Current - адрес на ноду с наименьшим эл-том правой ветки
+
+                // изменяем путь к потомкам текущего
+                Past->left = Current->right;
+
+                //изменяем путь к удаляемому элементуи
+                //и переназначаем сам элемент
+                Current->left = Deleting->left;
+                Current->right = Deleting->right;
+                if (is_left)
+                    Father->left = Current;
+                else
+                    Father->right = Current;
+
+
+                delete Deleting;
+
             }
             else{
                 //это лист
+                delete Deleting;
             }
 
 
