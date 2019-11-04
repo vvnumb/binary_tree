@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <stack>
 using namespace std;
 
 
@@ -195,12 +195,39 @@ public:
 
         }
     }
+
+    void StrightWayPrint(){
+        bool mas[1000];
+        for (int i = 0; i < 1000; i++)
+            mas[i] = 0;
+        Node * Current = _root;
+        stack<Node*> st;
+        st.push(Current);
+        while(st.size()){
+            while(st.top()->left != NULL && !mas[Current->left->Data]){
+                Current = st.top()->left;
+                st.push(Current);
+            }
+            Current = st.top();
+            mas[Current->Data] = 1;
+            cout << st.top()->Data << " ";
+            st.pop();
+            if (Current->right != NULL)
+                st.push(Current->right);
+            else
+                if (st.size())
+                    Current = st.top();
+        }
+
+    }
     //end of tree
 
 };
 
 int main()
 {
-    cout << "Hello World!" << endl;
+    bin_tree BST;
+    BST.AddNode(10);    BST.AddNode(8); BST.AddNode(9);BST.AddNode(6); BST.AddNode(7); BST.AddNode(11); BST.AddNode(12);
+    BST.StrightWayPrint();
     return 0;
 }
