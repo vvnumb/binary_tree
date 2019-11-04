@@ -76,6 +76,7 @@ public:
 
     int DeleteNode(int data){ // 2 - удаление корня, 1- удаление не произведено тк элемента нет, 0- успешное удаление
         Node *Current = _root;
+
         if (Current->left == NULL && Current->right == NULL){
             if (Current->Data == data)
             {
@@ -86,11 +87,15 @@ public:
             {
                 return 1;
             }
-            bool is_not_found = 1;
-            bool is_end = 0;
+            Node *Father = _root; // удрес на родителя удаляемого элемента
+            bool is_left = 1; // потомок слева?
+
+
             // идем по бин.дереву пока либо не уперлись в конец дерева
             // либо пока не нашли нужный элемент
             // имеем 2 флага для контроля ситуации
+            bool is_not_found = 1;
+            bool is_end = 0;
             while (is_not_found && !is_end){
                 if (Current->Data > data){
                     //more
@@ -98,6 +103,8 @@ public:
                         is_end = 1;
                     }
                     else{
+                        is_left = 0;
+                        Father = Current;
                         Current = Current->right;
                     }
 
@@ -108,6 +115,8 @@ public:
                         is_end = 1;
                     }
                     else{
+                        is_left = 1;
+                        Father = Current;
                         Current= Current->left;
                     }
                 }
@@ -120,9 +129,33 @@ public:
             if (is_end){ // удаление не требуется, если не нашли нашего элемента
                 return 1;
             }
+
+            Node *Deleting = Current; // записали удаляемый элемент
+            Node *Past; // сохраняем предыдущий элемент, чтобы в дальнейшем поменять связи
+
             // приорететная левая ветка
             if (Current->left != NULL){
                 //пошли искать наибольший элемент в левой ветке
+
+                Current = Current->left;
+                while(Current->right != NULL){
+                    Past = Current;
+                    Current = Current->right;
+                }
+                //Current - адрес на ноду с наибольшим элементом в левой ветке
+
+                // изменяем путь к потомкам наибольшего в левом поддереве
+                Past->right = Current->left;
+
+                //изменяем путь к удаляемому элементуи
+                //и переназначаем сам элемент
+                Current->left = Deleting->left;
+                Current->right = Deleting->right;
+                if (is_left)
+                    Father->left = Current;
+                else
+                    Father->right = Current;
+                delete Deleting;
 
             }
             else if(Current->right != NULL){
