@@ -74,6 +74,12 @@ public:
         }
     }
 
+
+    //NEED TOTAL DEBUG
+    //WATCH COMPAIRING
+
+    //UPD: листы удаляет нормально
+    //UPD2: да и вообще норм, кроме корня
     int DeleteNode(int data){ // 2 - удаление корня, 1- удаление не произведено тк элемента нет, 0- успешное удаление
         Node *Current = _root;
 
@@ -87,6 +93,7 @@ public:
             {
                 return 1;
             }
+        }
             Node *Father = _root; // удрес на родителя удаляемого элемента
             bool is_left = 1; // потомок слева?
 
@@ -97,7 +104,7 @@ public:
             bool is_not_found = 1;
             bool is_end = 0;
             while (is_not_found && !is_end){
-                if (Current->Data > data){
+                if (Current->Data < data){
                     //more
                     if(Current->right == NULL){
                         is_end = 1;
@@ -109,7 +116,7 @@ public:
                     }
 
                 }
-                else if(Current->Data < data){
+                else if(Current->Data > data){
                     //less
                     if (Current->left == NULL){
                         is_end = 1;
@@ -145,19 +152,32 @@ public:
                 //Current - адрес на ноду с наибольшим элементом в левой ветке
 
                 // изменяем путь к потомкам наибольшего в левом поддереве
+                if (Past != Deleting){
                 Past->right = Current->left;
 
                 //изменяем путь к удаляемому элементуи
                 //и переназначаем сам элемент
                 Current->left = Deleting->left;
                 Current->right = Deleting->right;
-                if (is_left)
-                    Father->left = Current;
-                else
-                    Father->right = Current;
+                if (Deleting != _root)
+                    if (is_left)
+                        Father->left = Current;
+                    else
+                        Father->right = Current;
 
+                else
+                    _root = Current;
 
                 delete Deleting;
+                }
+                else{
+                    Current->right = Deleting->right;
+                    if (is_left)
+                        Father->left = Current;
+                    else
+                        Father->right = Current;
+
+                }
             }
             else if(Current->right != NULL){
                 // ищем наименьший элемент в правой ветке
@@ -170,32 +190,59 @@ public:
                 //Current - адрес на ноду с наименьшим эл-том правой ветки
 
                 // изменяем путь к потомкам текущего
+                if (Deleting != Past){
                 Past->left = Current->right;
 
                 //изменяем путь к удаляемому элементуи
                 //и переназначаем сам элемент
                 Current->left = Deleting->left;
-                Current->right = Deleting->right;
+                if(Deleting != Past)
+                    Current->right = Deleting->right;
+                if(Father  != NULL)
                 if (is_left)
                     Father->left = Current;
                 else
                     Father->right = Current;
-
-
+                else
+                    _root = Current;
                 delete Deleting;
+                }
+                else{
+                    Current->right  = Deleting->right;
+                    if(Father  != NULL)
+                    if (is_left)
+                        Father->left = Current;
+                    else
+                        Father->right = Current;
+                    else
+                        _root = Current;
+                    delete Deleting;
+                }
+
+
+
 
             }
             else{
                 //это лист
+                if (is_left)
+                    Father->left = NULL;
+                else
+                    Father->right = NULL;
+
+
                 delete Deleting;
             }
 
+            return 0;
 
 
 
-        }
     }
 
+
+
+    //CORRECT
     void StrightWayPrint(){
         bool mas[1000];
         for (int i = 0; i < 1000; i++)
@@ -204,7 +251,7 @@ public:
         stack<Node*> st;
         st.push(Current);
         while(st.size()){
-            while(st.top()->left != NULL && !mas[Current->left->Data]){
+            while(st.top()->left != NULL && !mas[Current->left->Data]){ // ?
                 Current = st.top()->left;
                 st.push(Current);
             }
@@ -212,8 +259,9 @@ public:
             mas[Current->Data] = 1;
             cout << st.top()->Data << " ";
             st.pop();
-            if (Current->right != NULL)
+            if (Current->right != NULL){
                 st.push(Current->right);
+                Current = Current->right;}
             else
                 if (st.size())
                     Current = st.top();
@@ -227,7 +275,12 @@ public:
 int main()
 {
     bin_tree BST;
-    BST.AddNode(10);    BST.AddNode(8); BST.AddNode(9);BST.AddNode(6); BST.AddNode(7); BST.AddNode(11); BST.AddNode(12);
+    //BST.AddNode(11);    BST.AddNode(9); BST.AddNode(8);BST.AddNode(10);BST.AddNode(6); BST.AddNode(7); BST.AddNode(12); BST.AddNode(13);
+    BST.AddNode(11); BST.AddNode(13); BST.AddNode(12); BST.AddNode(14); BST.AddNode(9); BST.AddNode(10); BST.AddNode(7); BST.AddNode(6); BST.AddNode(8);
+    BST.StrightWayPrint();
+    // удаление
+    int k = BST.DeleteNode(14);
+    cout << endl << k << endl;
     BST.StrightWayPrint();
     return 0;
 }
